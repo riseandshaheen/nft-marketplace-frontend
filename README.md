@@ -1,8 +1,5 @@
-# Frontend-Cartesi-Wallet-x
+# NFT-MARKETPLACE-FRONTEND
 
-```
-Cartesi Rollups version: 1.0.x
-```
 
 ## Features
 

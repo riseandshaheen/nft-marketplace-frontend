@@ -13,18 +13,9 @@
 import { BigNumber, ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useRollups } from "./useRollups";
-import { useReportsQuery, useVoucherQuery } from "./generated/graphql";
+import { useNoticesQuery, useVoucherQuery } from "./generated/graphql";
 import { Card, CardHeader, CardBody, CardFooter, Image, Stack, Heading } from '@chakra-ui/react'
 import {
-    Table,
-    Thead,
-    Tbody,
-    Tfoot,
-    Tr,
-    Th,
-    Td,
-    TableCaption,
-    TableContainer,
     Button,
     Text,
     Spinner,
@@ -34,12 +25,24 @@ import {
     Spacer,
     Grid
   } from '@chakra-ui/react'
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+  } from '@chakra-ui/react'
+import { useDisclosure } from '@chakra-ui/react'
 
-type Report = {
+type Notice = {
     id: string;
     index: number;
     input: any, //{index: number; epoch: {index: number; }
-    payload: string;
+    //payload: string;
+    creator: string;
+    image: string;
 };
 
 type Voucher = {
@@ -59,22 +62,22 @@ type LoadingStates = {
   };
 
 export const Mint: React.FC<IMintPropos> = (propos) => {
-    const [result,reexecuteQuery] = useReportsQuery();
+    const [result,reexecuteQuery] = useNoticesQuery();
     const { data, fetching, error } = result;
 
     const [ voucherToExecute, setVoucherToExecute ] = useState(0)
     const [executionStatus, setExecutionStatus] = useState(false)
     const [voucherResult, reexecuteVoucherQuery] = useVoucherQuery({variables: { voucherIndex: 0, inputIndex: voucherToExecute }});
     const [loadingStates, setLoadingStates] = useState<LoadingStates>({});
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     const rollups = useRollups(propos.dappAddress);
 
-    if (fetching) return <p>Loading...</p>;
-    if (error) return <p>Oh no... {error.message}</p>;
+    if (fetching) return <p>Fetching...</p>;
+    if (error) return <p>Error... {error.message}</p>;
+    if (!data || !data.notices) return <p>No Notices</p>;
 
-    if (!data || !data.reports) return <p>No reports</p>;
-
-    const reports: Report[] = data.reports.edges.map((node: any) => {
+    const notices: Notice[] = data.notices.edges.map((node: any) => {
         const n = node.node;
         let inputPayload = n?.input.payload;
         if (inputPayload) {
@@ -87,9 +90,21 @@ export const Mint: React.FC<IMintPropos> = (propos) => {
             inputPayload = "(empty)";
         }
         let payload = n?.payload;
+        let creator = "(unknown)";
+        let image = "(unknown)";
         if (payload) {
             try {
                 payload = ethers.utils.toUtf8String(payload);
+                try {
+                    const parsedPayload = JSON.parse(payload);
+                    creator = parsedPayload.creator || "(unknown)";
+                    image = parsedPayload.image || "(unknown)";
+                } catch (jsonError) {
+                    // Handle cases where payload is not JSON
+                    console.error("Failed to parse payload as JSON:", jsonError);
+                    creator = "(unknown)";
+                    image = "(unknown)";
+                }
             } catch (e) {
                 payload = payload + " (hex)";
             }
@@ -99,7 +114,9 @@ export const Mint: React.FC<IMintPropos> = (propos) => {
         return {
             id: `${n?.id}`,
             index: parseInt(n?.index),
-            payload: `${payload}`,
+            //payload: `${payload}`,
+            creator: creator,
+            image: image,
             input: n ? {index:n.input.index,payload: inputPayload} : {},
         };
     }).sort((b: any, a: any) => {
@@ -159,7 +176,7 @@ export const Mint: React.FC<IMintPropos> = (propos) => {
         <div>
             {/* List all reports */}
             <Grid templateColumns='repeat(3, 1fr)' gap={6}>
-            {reports.map((n: any) => (
+            {notices.map((n: any) => (
                 <Card maxW='sm' marginBottom='5' key={`${n.input.index}-${n.index}`}>
                     {/* <Td>{n.input.index}</Td>
                     <Td>{n.index}</Td> */}
@@ -167,13 +184,37 @@ export const Mint: React.FC<IMintPropos> = (propos) => {
 
                     <CardBody color={'grey'}>
                                 <Image
-                                src={`data:image/png;base64, ${n.payload}`}
+                                src={`data:image/png;base64, ${n.image}`}
                                 borderRadius='lg'
                                 />
                         <Text>{n.input.index}</Text>
                     </CardBody>
                     <CardFooter>
-                        <Button onClick={() => handleExecuteVoucherClick(`${n.input.index}-${n.index}`)} > {loadingStates[`${n.input.index}-${n.index}`] ? <Spinner />: "Mint"}</Button>
+                        {/*<Button onClick={() => handleExecuteVoucherClick(`${n.input.index}-${n.index}`)} > {loadingStates[`${n.input.index}-${n.index}`] ? <Spinner />: "Mint"}</Button> */}
+                        <Button onClick={onOpen}>Info</Button>
+
+                        {/* Pop up details UI for NFT */}
+                        <Modal isOpen={isOpen} onClose={onClose}>
+                            <ModalOverlay />
+                            <ModalContent>
+                            <ModalHeader>{n.input.index}</ModalHeader>
+                            <ModalCloseButton />
+                            <ModalBody>
+                                <Image
+                                    src={`data:image/png;base64, ${n.image}`}
+                                    borderRadius='lg'
+                                />
+                                <Text>Created by: {n.creator}</Text>
+                            </ModalBody>
+
+                            <ModalFooter>
+                                <Button colorScheme='blue' mr={3} onClick={onClose}>
+                                Close
+                                </Button>
+                                <Button variant='ghost'>Mint</Button>
+                            </ModalFooter>
+                            </ModalContent>
+                        </Modal>
                     </CardFooter>
                 </Card>
             ))}

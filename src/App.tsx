@@ -17,11 +17,12 @@ import { useState } from "react";
 
 import { GraphQLProvider } from "./GraphQL";
 import { Notices } from "./Notices";
-import { Transfers } from "./Transfers";
+import { Playground } from "./Playground";
 import { Inspect } from "./Inspect";
 import { Network } from "./Network";
 import { Vouchers } from "./Vouchers";
 import { Reports } from "./Reports";
+import { Guide } from "./Guide" 
 import configFile from "./config.json";
 //import "./App.css";
 import { Balance } from "./Balance";
@@ -48,7 +49,7 @@ const App: FC = () => {
     const [dappAddress, setDappAddress] = useState<string>("0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e");
 
     return (
-        <SimpleGrid columns={1} marginLeft={'25%'} marginRight={'25%'}>  
+        <SimpleGrid columns={1} marginLeft={'15%'} marginRight={'15%'}>  
         <Network />
         <GraphQLProvider>
             <Stack>
@@ -67,13 +68,13 @@ const App: FC = () => {
                     onChange={(e) => setDappAddress(e.target.value)}
                 />
                 </ InputGroup >
-                <br /><br />
+                <br />
                 </Box>
             </Stack>
                 <br />
                     {/* <Balance /> */}
-                    <br /> <br />
-                    <Transfers dappAddress={dappAddress} />
+                    
+                    <Playground dappAddress={dappAddress} />
                     <br /> <br />
             </GraphQLProvider>
         </SimpleGrid>

@@ -14,6 +14,7 @@ import { FC } from "react";
 import { useConnectWallet, useSetChain } from "@web3-onboard/react";
 import configFile from "./config.json";
 import {Button, Select, Box, Badge, Spacer, Heading, Text, Stack, Image } from "@chakra-ui/react"
+import heroImage from "./assets/hero-image.png"
 
 const config: any = configFile;
 
@@ -25,27 +26,27 @@ export const Network: FC = () => {
         <Box>
             {!wallet && 
             <Box mt='20' alignContent={"center"}>
-            <Stack>
-            <Heading>Project Algorithmic Art Market! 🖼️ 🎨</Heading>
-            <Text color={'grey'}>
-                Let's generate algorithmic art NFTs with Cartesi rollups. 🚀 
-                <br />
-                .
-                <br />
-                <Image boxSize='300px' src="https://i.stack.imgur.com/GPzpD.png" />
-            </Text>
-            <Button
-                onClick={() =>
-                    connect()
-                }
-            >
-                {connecting ? "Connecting" : "Connect"}
-            </Button>
-            </Stack>
+                <Stack>
+                    <Heading>Turtlish! 🐢 🖼️ </Heading>
+                    <Text color={'grey'}>
+                        Generate verifiable art NFTs with Python code. 🚀 
+                        <br />
+                        .
+                        <br />
+                        <Image boxSize='300px' src={heroImage} />
+                    </Text>
+                    <Button width="100px" colorScheme="green"
+                        onClick={() =>
+                            connect()
+                        }
+                    >
+                        {connecting ? "Connecting" : "Connect "}
+                    </Button>
+                </Stack>
             </Box>
             }
             {wallet && (
-                <Box display='flex' w='100%' ml='2' mt='2' alignItems='baseline'>
+                <Box display='flex' w='100%' ml='2' mt='2' mb='0' alignItems='baseline'>
                    {/* <label><Badge>Network</Badge></label> */}
                     {settingChain ? (
                         <span>Switching chain...</span>
@@ -55,7 +56,7 @@ export const Network: FC = () => {
                                 if (config[value] !== undefined) {
                                     setChain({ chainId: value })
                                 } else {
-                                    alert("No deploy on this chain")
+                                    alert("Not deploy on this chain")
                                 }
                                 }
                             }
