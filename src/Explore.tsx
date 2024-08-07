@@ -1,8 +1,7 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
-import { useRollups } from "./useRollups";
-import { useNoticesQuery, useVoucherQuery } from "./generated/graphql";
-import { Card, CardHeader, CardBody, CardFooter, Image, Stack, Heading } from '@chakra-ui/react'
+import { useNoticesQuery } from "./generated/graphql";
+import { Card, CardBody, CardFooter, Image } from '@chakra-ui/react'
 import {
     Button,
     Text,
@@ -17,13 +16,11 @@ import {
     ModalBody,
     ModalCloseButton,
   } from '@chakra-ui/react'
-import { useDisclosure } from '@chakra-ui/react'
 
 type Notice = {
     id: string;
     index: number;
     input: any, //{index: number; epoch: {index: number; }
-    //payload: string;
     creator: string;
     image: string;
 };
@@ -31,20 +28,16 @@ type Notice = {
 type IExplorePropos = {
     dappAddress: string
 }
-type LoadingStates = {
-    [key: string]: boolean;
-  };
 
 export const Explore: React.FC<IExplorePropos> = (propos) => {
     const [result,reexecuteQuery] = useNoticesQuery();
     const { data, fetching, error } = result;
-    const [loadingStates, setLoadingStates] = useState<LoadingStates>({});
     const [selectedNotice, setSelectedNotice] = useState<Notice | null>(null);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
             reexecuteQuery({ requestPolicy: 'network-only' });
-        }, 10000); 
+        }, 20000); 
         return () => clearInterval(intervalId);
     }, [reexecuteQuery]);
 
@@ -89,7 +82,6 @@ export const Explore: React.FC<IExplorePropos> = (propos) => {
         return {
             id: `${n?.id}`,
             index: parseInt(n?.index),
-            //payload: `${payload}`,
             creator: creator,
             image: image,
             input: n ? {index:n.input.index,payload: inputPayload} : {},
@@ -102,27 +94,19 @@ export const Explore: React.FC<IExplorePropos> = (propos) => {
         }
     });
 
-    // Function to toggle loading state for a specific card
-    const toggleLoadingState = (cardId: number, isLoading: boolean) => {
-        setLoadingStates((prevLoadingStates) => ({
-        ...prevLoadingStates,
-        [cardId]: isLoading,
-        }));
-    };
-
-    // Function to open modal for a specific notice
+    // function to open modal for a specific notice
     const openModal = (notice: Notice) => {
         setSelectedNotice(notice);
     };
 
-    // Function to close modal
+    // function to close modal
     const closeModal = () => {
         setSelectedNotice(null);
     };
 
     return (
         <div>
-            {/* List all notices */}
+            {/* List all notices as cards */}
             <Grid templateColumns='repeat(3, 1fr)' gap={6}>
                 {notices.map((n: Notice) => (
                     <Card maxW='sm' marginBottom='5' key={`${n.input.index}-${n.index}`}>

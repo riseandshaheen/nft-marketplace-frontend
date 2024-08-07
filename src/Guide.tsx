@@ -1,10 +1,6 @@
 import { Box, ListItem, Text, UnorderedList, Code, Badge, Divider, Link } from "@chakra-ui/react"
-//import Markdown from 'react-markdown'
-//import file from "./guide.md"
-import { useEffect, useState } from "react";
 
 export const Guide: React.FC = () => {
-    const [ content, setContent ] = useState("")
     
     return(
         <Box alignContent='left'>

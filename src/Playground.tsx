@@ -2,15 +2,14 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import { useRollups } from "./useRollups";
 import { useWallets } from "@web3-onboard/react";
-import { Tabs, TabList, TabPanels, TabPanel, Tab, Link } from "@chakra-ui/react";
+import { Tabs, TabList, TabPanels, TabPanel, Tab, Spacer } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
-import { Button, ButtonGroup, Box } from "@chakra-ui/react";
-import { Input, HStack, Stack, Flex } from "@chakra-ui/react";
+import { Button, Box } from "@chakra-ui/react";
+import { HStack, Stack} from "@chakra-ui/react";
 import {
-  Image,
   Accordion,
 } from "@chakra-ui/react";
-import { Text, Select } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import { Explore } from "./Explore";
 import { Guide } from "./Guide" 
 import Editor from '@monaco-editor/react';
@@ -71,42 +70,58 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
         console.log("Image result: ", result);
         setImageData(result.image);
       } else {
+        const errorData = await response.json();
         console.error('Error in drawing:', response.statusText);
+        toast({
+          title: "Error",
+          description: errorData.error,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
       }
     } catch (error) {
       console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while running the script.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
     };
 
   return (
-    <Tabs variant="enclosed" size="lg" align="center" mt='0'>
-      <TabList>
-        <Tab>🐢 Code</Tab>
+    <Tabs variant="soft-rounded" size="lg" align="center" mt='0'>
+      <TabList mt='0'>
+        <Tab>▶️ Code</Tab>
         <Tab>🌏 Explore</Tab>
         <Tab>📝 Guide</Tab>
       </TabList>
       <Box p={4} display="flex">
         <TabPanels>
-          { /* Playgound */ }
+          { /* Playgound Tab */ }
           <TabPanel>
             <Text fontSize="sm" color="grey">
-              Code your Art, run it and Mint as NFT.
+              Code your Art, Run it and Mint as NFT
             </Text>
             <br />
-            <HStack p={1}>
+            <HStack p={1} display='flex'>
               <Button onClick={handleRunScript} size='sm' colorScheme="green">Run ▶️</Button>
+              <Spacer />
               <Button onClick={() => sendCodeInput(script)} size='sm' colorScheme="cyan" isDisabled={!imageData}>
                         Mint ✨
               </Button> 
             </HStack>
             <Box display="flex" margin="auto" position="relative">
               <Editor
-                      height="500px"
-                      width="500px"
-                      language="python"
-                      value={script}
-                      theme="vs-dark"
-                      onChange={handleEditorValueChange}
+                    height="500px"
+                    width="500px"
+                    language="python"
+                    value={script}
+                    theme="vs-dark"
+                    onChange={handleEditorValueChange}
                   />
                 <br />
 
@@ -122,20 +137,20 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
                 >
                   {imageData && (
                     <Stack>
-                    <img
-                      src={`data:image/png;base64,${imageData}`}
-                      alt="Generated"
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
-                </Stack>
+                      <img
+                        src={`data:image/png;base64,${imageData}`}
+                        alt="Generated"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </Stack>
                   )}
                 </div>
                 <br />
-              </Box>
-              </Box>  
+                </Box>
+            </Box>  
           </TabPanel>
           
-          { /* Explore */ }
+          { /* Explore Tab */ }
           <TabPanel>
             <Accordion defaultIndex={[0]} allowMultiple>
             <Text fontSize="sm" color="grey">
@@ -146,7 +161,7 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
             </Accordion>
           </TabPanel>
 
-          { /* Guide */ }
+          { /* Guide Tab */ }
           <TabPanel>
                 <Guide />
           </TabPanel>
