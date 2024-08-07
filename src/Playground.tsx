@@ -23,6 +23,7 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
   const [connectedWallet] = useWallets();
   const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
   const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const [script, setScript] = useState<string|undefined>('# Add code here');
   const [imageData, setImageData] = useState('');
 
@@ -55,8 +56,10 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
   }
 
   const handleRunScript = async () => {
+    setIsLoading(true);
     console.log("Running the script: ", script)
     try {
+      // update as per dev or prod environment
       const response = await fetch('https://flask-hello-world-gamma-sand-69.vercel.app/draw', {
         method: 'POST',
         headers: {
@@ -89,8 +92,10 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
-    };
+  };
 
   return (
     <Tabs variant="soft-rounded" size="lg" align="center" mt='0'>
@@ -108,7 +113,7 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
             </Text>
             <br />
             <HStack p={1} display='flex'>
-              <Button onClick={handleRunScript} size='sm' colorScheme="green">Run ▶️</Button>
+              <Button onClick={handleRunScript} size='sm' colorScheme="green" isLoading={isLoading}>Run ▶️</Button>
               <Spacer />
               <Button onClick={() => sendCodeInput(script)} size='sm' colorScheme="cyan" isDisabled={!imageData}>
                         Mint ✨
