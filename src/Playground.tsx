@@ -57,7 +57,7 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
   const handleRunScript = async () => {
     console.log("Running the script: ", script)
     try {
-      const response = await fetch('http://127.0.0.1:5000/draw', {
+      const response = await fetch('https://flask-hello-world-gamma-sand-69.vercel.app/draw', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
