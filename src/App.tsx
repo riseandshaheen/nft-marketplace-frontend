@@ -20,12 +20,13 @@ init({
         description: "Generate verifiable NFTs with Python Code",
         recommendedInjectedWallets: [
             { name: "MetaMask", url: "https://metamask.io" },
+            { name: "Coinbase", url: "https://www.coinbase.com/"},
         ],
     },
 });
 
 const App: FC = () => {
-    const [dappAddress, setDappAddress] = useState<string>("0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e");
+    const [dappAddress, setDappAddress] = useState<string>("0x11780dFA9c0B1F8C4889BdE71420725476d9e205");
 
     return (
         <Box>
