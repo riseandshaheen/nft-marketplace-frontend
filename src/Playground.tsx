@@ -24,18 +24,18 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
   const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isMinting, setIsMinting] = useState(false); 
   const [script, setScript] = useState<string|undefined>('# Add code here');
   const [imageData, setImageData] = useState('');
 
   const sendCodeInput = async(script: string|undefined) => {
+    setIsMinting(true);
     try{
       await window.ethereum.enable();
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = accounts[0];
         console.log("Account:", account)
         console.log("Script: ", script)
-      
-      // TODO: sanitize code before sending
       
       let dataObject = {
         method: "draw",
@@ -45,10 +45,28 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
         let jsonString = JSON.stringify(dataObject);
         console.log("JSON Input: ", jsonString)
         let payload = ethers.utils.toUtf8Bytes(jsonString);
-        await rollups.inputContract.addInput(propos.dappAddress, payload);
+        const trx = await rollups.inputContract.addInput(propos.dappAddress, payload);
+        await trx.wait()
+        toast({
+          title: "Transaction Successful",
+          description: "Your NFT will be listed on Explore page in a few seconds.",
+          status: "success",
+          duration: 7000,
+          isClosable: true,
+        });
       }
+    } catch(e){
+      console.log(`${e}`)
+      toast({
+        title: "Transaction Failed",
+        description: "An error occurred while submitting your input.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsMinting(false);
     }
-    catch(e){console.log(`${e}`)}
   }
 
   const handleEditorValueChange = (value: string|undefined) => {
@@ -115,7 +133,7 @@ export const Playground: React.FC<IInputPropos> = (propos) => {
             <HStack p={1} display='flex'>
               <Button onClick={handleRunScript} size='sm' colorScheme="green" isLoading={isLoading}>Run ▶️</Button>
               <Spacer />
-              <Button onClick={() => sendCodeInput(script)} size='sm' colorScheme="cyan" isDisabled={!imageData}>
+              <Button onClick={() => sendCodeInput(script)} size='sm' colorScheme="cyan" isDisabled={!imageData} isLoading={isMinting}>
                         Mint ✨
               </Button> 
             </HStack>

@@ -37,7 +37,7 @@ export const Explore: React.FC<IExplorePropos> = (propos) => {
     useEffect(() => {
         const intervalId = setInterval(() => {
             reexecuteQuery({ requestPolicy: 'network-only' });
-        }, 20000); 
+        }, 30000); 
         return () => clearInterval(intervalId);
     }, [reexecuteQuery]);
 
