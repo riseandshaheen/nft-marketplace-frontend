@@ -36,7 +36,8 @@ export const Guide: React.FC = () => {
                         <Code colorScheme='blue'>goto(x-value, y-value)</Code> <br/>
                         <Code colorScheme='blue'>setx(value)</Code> <br/>
                         <Code colorScheme='blue'>sety(value)</Code> <br/>
-                        <Code colorScheme='blue'>circle(radius, degrees)</Code> <br/>  
+                        <Code colorScheme='blue'>circle(radius, degrees)</Code> <br/>
+                        <Code colorScheme='blue'>dot(diameter_in_pixels)</Code> <br/>   
                     </ListItem>
                 </UnorderedList>
             </Text>
